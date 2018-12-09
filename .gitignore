@@ -4,6 +4,4 @@
 .project
 .settings
 *.class
-target/m2e-wtp/web-resources/META-INF/maven/com.appspot.fherdelpino/spotifyapi/pom.xml
-target/m2e-wtp/web-resources/META-INF/maven/com.appspot.fherdelpino/spotifyapi/pom.properties
 /target/
