@@ -34,13 +34,13 @@ public class TestController extends HttpServlet {
 		String client_id = (String) credentials.getProperty("client_id");
 		String client_secret = (String) credentials.getProperty("client_secret");
 		
-		resp.getWriter().print(String.format("client_id: %s\n", client_id));
-		resp.getWriter().print(String.format("client_secret: %s\n", client_secret));
-		
 		if (client_id == null || client_id.isEmpty()) {
 			createSpotifyCredentials( req,  resp);
 			resp.sendRedirect("/test");
 		}
+			
+		resp.getWriter().print(String.format("client_id: %s\n", client_id));
+		resp.getWriter().print(String.format("client_secret: %s\n", client_secret));
 			
 	}
 	
