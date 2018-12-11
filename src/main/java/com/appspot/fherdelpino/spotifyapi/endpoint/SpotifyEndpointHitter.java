@@ -28,9 +28,9 @@ public class SpotifyEndpointHitter {
 
 	}
 
-	public JsonObject getUserSavedTracks() {
+	public JsonObject getUserSavedTracks(int offset, int limit) {
 		WebTarget t = factory.createUserSavedTracksTarget();
-		Response r = t.queryParam("limit", 50).request().header("Authorization", "Bearer " + TOKEN).get();
+		Response r = t.queryParam("offset",offset).queryParam("limit", limit).request().header("Authorization", "Bearer " + TOKEN).get();
 		String bodyString = r.readEntity(String.class);
 
 		JsonObject bodyJson = new Gson().fromJson(bodyString, JsonObject.class);

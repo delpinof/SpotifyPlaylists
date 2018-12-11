@@ -1,6 +1,8 @@
 package com.appspot.fherdelpino.spotifyapi.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,28 +36,55 @@ public class SpotifyCallbackController extends HttpServlet {
 
 		SpotifyEndpointHitter hit = new SpotifyEndpointHitter(token);
 		
-		JsonObject json = hit.getCurrentUserProfile();
-		JsonObject jsonResponse = hit.getUserSavedTracks();
+		JsonObject userProfile = hit.getCurrentUserProfile();
 		
-		JsonElement image1 = json.get("images").getAsJsonArray().get(0);
+		
+		JsonElement image1 = userProfile.get("images").getAsJsonArray().get(0);
 		String imageURL = image1.getAsJsonObject().get("url").toString();
 		
 		response.getWriter().print("<html><body>");
 		response.getWriter().print(String.format("<img src=%s />", imageURL));	
 		
-		JsonElement track = null;		
-		response.getWriter().print("<ul>");
-		for(JsonElement item : jsonResponse.get("items").getAsJsonArray()) {
+		
+		Map<String,String> tracks = getTracks(token);
+		
+		response.getWriter().print("<ol>");
+		for(String track : tracks.keySet()) {
 			response.getWriter().print("<li>");
-			track = item.getAsJsonObject().get("track");
-			response.getWriter().print(track.getAsJsonObject().get("name").toString());
+			response.getWriter().print(String.format("%s - %s", tracks.get(track), track));
 			response.getWriter().print("</li>");
 		}
-		response.getWriter().print("</ul>");
+		response.getWriter().print("</ol>");
+
+		response.getWriter().print("</body></html>");
+	}
+	
+	private Map<String,String> getTracks(String token) {
+		
+		Map<String,String> result = new HashMap<>();
+		SpotifyEndpointHitter hit = new SpotifyEndpointHitter(token);
+		
+		String nextTracksURL = "tracks", trackName,artist;
+		int factor = 50, cont = 0;
+		JsonObject userTracks, track;
 
 		
+		while (!nextTracksURL.equals("null")) {
+			userTracks = hit.getUserSavedTracks(factor*cont,factor);
+			
+			for(JsonElement item : userTracks.get("items").getAsJsonArray()) {
+				track = item.getAsJsonObject().get("track").getAsJsonObject();
+				trackName = track.get("name").toString();
+				artist = track.get("artists").getAsJsonArray().get(0).getAsJsonObject().get("name").toString();
+				log.info(String.format("%s - %s",artist,trackName));
+				result.put(trackName, artist);
+			}
+			
+			cont++;
+			nextTracksURL = userTracks.get("next").toString();
+		}
 		
-		response.getWriter().print("</body></html>");
+		return result;
 	}
 
 }
