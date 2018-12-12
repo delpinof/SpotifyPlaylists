@@ -29,36 +29,41 @@ public class SpotifyService {
 		return new UserDetailsBean(userId, imageURL);
 
 	}
-	
+
 	public List<TrackBean> getUserTracks() {
-		
+
 		List<TrackBean> tracks = new ArrayList<>();
-		String nextTracksURL = "tracks";
+		String nextTracksURL = "";
 		int factor = 50, cont = 0;
 		JsonObject userTracks;
 
 		while (!nextTracksURL.equals("null")) {
-			userTracks = HIT.getUserSavedTracks(factor*cont,factor);
-			
-			for(JsonElement item : userTracks.get("items").getAsJsonArray()) {
+			userTracks = HIT.getUserSavedTracks(factor * cont, factor);
+
+			for (JsonElement item : userTracks.get("items").getAsJsonArray()) {
 				tracks.add(getTrackData(item));
 			}
-			
+
 			cont++;
 			nextTracksURL = userTracks.get("next").toString();
 		}
 		return tracks;
 	}
-	
+
 	private TrackBean getTrackData(JsonElement item) {
-		
-			JsonObject track = item.getAsJsonObject().get("track").getAsJsonObject();
-			String id = track.get("id").toString();
-			String trackname = track.get("name").toString();
-			String artist = track.get("artists").getAsJsonArray().get(0).getAsJsonObject().get("name").toString();
-			return new TrackBean(id,trackname,artist);
+
+		JsonObject track = item.getAsJsonObject().get("track").getAsJsonObject();
+		String id = track.get("id").toString();
+		String trackname = track.get("name").toString();
+		String artist = track.get("artists").getAsJsonArray().get(0).getAsJsonObject().get("name").toString();
+		return new TrackBean(id, trackname, artist);
 	}
-	
-	
+
+	public String createPlaylist(String userId, String playlistName) {
+		JsonObject response = HIT.createPlaylist(userId, playlistName);
+		
+		return response.toString();		
+		
+	}
 
 }

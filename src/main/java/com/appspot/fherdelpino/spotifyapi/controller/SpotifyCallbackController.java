@@ -50,6 +50,7 @@ public class SpotifyCallbackController extends HttpServlet {
 		response.getWriter().print("</ol>");
 
 		response.getWriter().print("</body></html>");
+		
 	}
 	
 
